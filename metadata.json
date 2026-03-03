@@ -1,0 +1,5 @@
+{
+  "name": "식물도사 (Plant Master)",
+  "description": "이미지를 통해 식물을 식별하고, 상세 정보와 관리 방법을 제공하는 애플리케이션입니다. 디지털 식물 백과사전 역할을 합니다.",
+  "requestFramePermissions": []
+}
