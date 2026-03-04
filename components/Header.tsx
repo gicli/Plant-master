@@ -16,13 +16,6 @@ export const Header: React.FC = () => {
             <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-[0.2em] mt-1">Plant Master</p>
           </div>
         </div>
-        <nav className="hidden md:flex items-center gap-6">
-          <a href="#" className="text-sm font-bold text-slate-600 hover:text-emerald-600 transition-colors">가이드</a>
-          <a href="#" className="text-sm font-bold text-slate-600 hover:text-emerald-600 transition-colors">커뮤니티</a>
-          <button className="bg-emerald-50 text-emerald-700 px-4 py-2 rounded-full text-sm font-bold hover:bg-emerald-100 transition-colors">
-            로그인
-          </button>
-        </nav>
       </div>
     </header>
   );
