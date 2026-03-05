@@ -1,6 +1,6 @@
 
 import React, { useState, useCallback, useEffect } from 'react';
-import { RefreshCw, Key } from 'lucide-react';
+import { RefreshCw } from 'lucide-react';
 import { Header } from './components/Header';
 import { FileUpload } from './components/FileUpload';
 import { NameSearch } from './components/NameSearch';
@@ -23,24 +23,6 @@ const App: React.FC = () => {
   const [suggestions, setSuggestions] = useState<PlantSuggestion[] | null>(null);
   const [showSuggestionsModal, setShowSuggestionsModal] = useState<boolean>(false);
   const [searchKey, setSearchKey] = useState<number>(0);
-  const [hasApiKey, setHasApiKey] = useState<boolean>(true);
-
-  useEffect(() => {
-    const checkApiKey = async () => {
-      if (window.aistudio && typeof window.aistudio.hasSelectedApiKey === 'function') {
-        const hasKey = await window.aistudio.hasSelectedApiKey();
-        setHasApiKey(hasKey);
-      }
-    };
-    checkApiKey();
-  }, []);
-
-  const handleOpenKeySelector = async () => {
-    if (window.aistudio && typeof window.aistudio.openSelectKey === 'function') {
-      await window.aistudio.openSelectKey();
-      setHasApiKey(true); // Assume success as per guidelines
-    }
-  };
 
   const resetState = () => {
     setPlantInfo(null);
@@ -98,6 +80,13 @@ const App: React.FC = () => {
     }
   }, [selectedFile]);
 
+  // Auto-trigger analysis when a file is selected
+  useEffect(() => {
+    if (selectedFile && activeTab === 'image' && !plantInfo && !isLoading && !error) {
+      handleAnalyze();
+    }
+  }, [selectedFile, activeTab, plantInfo, isLoading, error, handleAnalyze]);
+
   const handleNameSearch = useCallback(async (plantName: string) => {
     if (!plantName) {
       setError('식물 이름을 입력해주세요.');
@@ -123,37 +112,6 @@ const App: React.FC = () => {
     <div className="min-h-screen flex flex-col bg-emerald-50 text-slate-800">
       <Header />
       
-      {!hasApiKey && (
-        <div className="fixed inset-0 z-[100] bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl text-center space-y-6">
-            <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto">
-              <Key className="text-emerald-600" size={40} />
-            </div>
-            <div className="space-y-2">
-              <h2 className="text-2xl font-black text-slate-800">API 키가 필요합니다</h2>
-              <p className="text-slate-600">
-                이미지 생성 기능을 사용하려면 유료 프로젝트의 API 키 선택이 필요합니다.
-                <br />
-                <a 
-                  href="https://ai.google.dev/gemini-api/docs/billing" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-emerald-600 underline text-sm"
-                >
-                  결제 문서 확인하기
-                </a>
-              </p>
-            </div>
-            <button
-              onClick={handleOpenKeySelector}
-              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-2xl shadow-xl transition-all active:scale-[0.98]"
-            >
-              API 키 선택하기
-            </button>
-          </div>
-        </div>
-      )}
-
       <main className="flex-grow container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto space-y-8">
           {/* Tab Selection */}
@@ -185,9 +143,9 @@ const App: React.FC = () => {
             </div>
 
             {activeTab === 'image' ? (
-              <FileUpload onFileSelect={handleFileSelect} onAnalyze={handleAnalyze} onReset={resetState} isLoading={isLoading} />
+              <FileUpload key={searchKey} onFileSelect={handleFileSelect} onAnalyze={handleAnalyze} isLoading={isLoading} />
             ) : (
-              <NameSearch key={searchKey} onSearch={handleNameSearch} onReset={resetState} isLoading={isLoading} />
+              <NameSearch key={searchKey} onSearch={handleNameSearch} isLoading={isLoading} />
             )}
             
             {error && (

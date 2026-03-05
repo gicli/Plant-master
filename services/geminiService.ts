@@ -1,11 +1,20 @@
 import { GoogleGenAI, Type } from '@google/genai';
 import type { PlantInfo, AnalysisResult, PlantSuggestion } from '../types';
 
-if (!process.env.API_KEY) {
-  throw new Error("API_KEY environment variable not set");
-}
+// Lazy initialization of the Gemini API client
+let aiInstance: GoogleGenAI | null = null;
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+const getAI = () => {
+  if (!aiInstance) {
+    // Use the platform-provided GEMINI_API_KEY which is automatically injected
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      throw new Error("Gemini API 키를 찾을 수 없습니다. 플랫폼 설정을 확인해주세요.");
+    }
+    aiInstance = new GoogleGenAI({ apiKey });
+  }
+  return aiInstance;
+};
 
 const plantInfoSchema = {
   type: Type.OBJECT,
@@ -60,6 +69,7 @@ export const analyzeImage = async (file: File): Promise<AnalysisResult> => {
     `;
 
     try {
+        const ai = getAI();
         const response = await ai.models.generateContent({
             model: 'gemini-3-flash-preview',
             contents: { parts: [imagePart, { text: prompt }] },
@@ -82,6 +92,7 @@ export const generateImage = async (plantName: string, englishName?: string): Pr
     const prompt = `'${plantName}'${englishNamePart} plant, realistic high-quality photo, isolated on white background, studio lighting.`;
 
     try {
+        const ai = getAI();
         const response = await ai.models.generateContent({
             model: 'gemini-2.5-flash-image',
             contents: {
@@ -134,6 +145,7 @@ export const getPlantInfoByName = async (plantName: string): Promise<Omit<PlantI
   `;
 
   try {
+    const ai = getAI();
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
       contents: prompt,
