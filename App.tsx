@@ -80,13 +80,6 @@ const App: React.FC = () => {
     }
   }, [selectedFile]);
 
-  // Auto-trigger analysis when a file is selected
-  useEffect(() => {
-    if (selectedFile && activeTab === 'image' && !plantInfo && !isLoading && !error) {
-      handleAnalyze();
-    }
-  }, [selectedFile, activeTab, plantInfo, isLoading, error, handleAnalyze]);
-
   const handleNameSearch = useCallback(async (plantName: string) => {
     if (!plantName) {
       setError('식물 이름을 입력해주세요.');

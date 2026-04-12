@@ -78,11 +78,9 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onFileSelect, onAnalyze,
           className={`
             relative w-full py-5 rounded-2xl font-black text-lg tracking-tight transition-all duration-300
             flex items-center justify-center gap-3 overflow-hidden
-            ${isLoading 
-              ? 'bg-emerald-600 text-white cursor-wait opacity-80' 
-              : !preview 
-                ? 'bg-slate-100 text-slate-400 cursor-not-allowed' 
-                : 'bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-[0_20px_40px_-15px_rgba(20,184,166,0.4)] hover:from-emerald-600 hover:to-teal-700 hover:-translate-y-1 active:translate-y-0 active:scale-[0.98]'}
+            ${!preview || isLoading 
+              ? 'bg-slate-100 text-slate-400 cursor-not-allowed' 
+              : 'bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-[0_20px_40px_-15px_rgba(20,184,166,0.4)] hover:from-emerald-600 hover:to-teal-700 hover:-translate-y-1 active:translate-y-0 active:scale-[0.98]'}
           `}
         >
           {isLoading ? (
